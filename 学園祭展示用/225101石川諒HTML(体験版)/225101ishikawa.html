@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>爆釣一閃！おさかな一本勝負 (学園祭スコアアタック版)</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Reggae+One&display=swap">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+            touch-action: manipulation;
+        }
+
+        body {
+            background-color: #050b14;
+            color: #fff;
+            font-family: 'DotGothic16', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100vw;
+            max-width: 480px;
+            height: 100vh;
+            height: 100dvh;
+            max-height: 800px;
+            background-color: #0a192f;
+            background-image: url('images/bg/bg_sea.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border: 4px double #d4af37;
+            box-shadow: 0 0 25px rgba(0, 150, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            image-rendering: pixelated;
+            overflow: hidden;
+        }
+
+        @media screen and (min-width: 768px) {
+            #game-container {
+                height: 90vh;
+                max-height: 720px;
+                border-width: 6px;
+                border-radius: 12px;
+            }
+        }
+
+        /* 共通ボタン */
+        .btn {
+            background: #8b0000;
+            color: #fff;
+            border: 2px solid #d4af37;
+            padding: 10px 18px;
+            font-family: 'DotGothic16', sans-serif;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #000;
+        }
+
+        /* ヘッダーUI */
+        .ui-header {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.92);
+            border-bottom: 3px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .header-score-box {
+            font-size: 16px;
+            color: #00ffcc;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .header-time-box {
+            font-size: 18px;
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* タイトル・メニュー画面 */
+        #title-screen, #menu-screen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: url('images/bg/bg_title.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 40;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #menu-screen {
+            display: none;
+            background-image: url('images/bg/bg_menu.png');
+            z-index: 35;
+        }
+
+        #main-logo {
+            font-family: 'Reggae One', cursive;
+            font-size: clamp(24px, 6vw, 32px);
+            color: #ffd700;
+            text-shadow: 3px 3px 0 #000, -3px -3px 0 #000;
+            margin-bottom: 18px;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.8);
+        }
+
+        .menu-status-box {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #d4af37;
+            padding: 12px 20px;
+            margin-bottom: 15px;
+            width: 90%;
+            max-width: 320px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .ranking-title {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #d4af37;
+            padding-bottom: 4px;
+        }
+
+        .ranking-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            margin: 6px 0;
+            color: #fff;
+        }
+
+        /* メニューボタン各種（メインの釣りを始めるボタンを大きく設定） */
+        .menu-btn {
+            font-size: clamp(14px, 3.8vw, 16px);
+            padding: 10px 20px;
+            margin: 5px 0;
+            width: 85%;
+            max-width: 280px;
+            background: rgba(139, 0, 0, 0.95);
+            color: #ffd700;
+            border: 3px double #ffd700;
+            box-shadow: 0 4px 0 #000;
+        }
+
+        .menu-btn-start {
+            font-size: clamp(16px, 4.5vw, 19px) !important;
+            padding: 14px 28px !important;
+            width: 92% !important;
+            max-width: 340px !important;
+            margin-bottom: 10px !important;
+            background: #a00000 !important;
+            box-shadow: 0 5px 0 #000 !important;
+        }
+
+        /* ゲームエリア */
+        #game-screen {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        #fish-shadow {
+            position: absolute;
+            top: 65%;
+            left: -200px;
+            width: 120px;
+            height: 60px;
+            pointer-events: none;
+            display: none;
+            z-index: 2;
+            image-rendering: pixelated;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        #exclamation {
+            font-family: 'Reggae One', cursive;
+            font-size: clamp(65px, 18vw, 90px);
+            color: #ff2200;
+            text-shadow: 4px 4px 0px #ffd700, -3px -3px 0px #000;
+            display: none;
+            z-index: 10;
+        }
+
+        #status-text {
+            font-size: clamp(18px, 5vw, 22px);
+            color: #fff;
+            text-shadow: 2px 2px 0px #000;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 10px 22px;
+            border: 2px dotted #d4af37;
+            margin-top: 20px;
+            z-index: 10;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* モーダル共通 */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            height: 80%;
+            max-height: 540px;
+            background: rgba(9, 17, 28, 0.97);
+            border: 3px double #d4af37;
+            border-radius: 10px;
+            padding: 16px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 65;
+            box-shadow: 0 0 30px rgba(0,0,0,0.95);
+        }
+
+        .modal-title {
+            font-family: 'Reggae One', cursive;
+            font-size: 22px;
+            color: #ffd700;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 12px;
+        }
+
+        .howto-body {
+            font-size: 15px;
+            line-height: 1.8;
+            text-align: left;
+            color: #ffffff;
+            overflow-y: auto;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1.5px solid #d4af37;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .howto-body strong {
+            color: #ffd700;
+            font-size: 16px;
+        }
+
+        .config-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 8px;
+            border-bottom: 1px dotted #334455;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        /* ゲット時ポップアップ modal（画像を大型化） */
+        #catch-modal {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 340px;
+            background: rgba(5, 12, 24, 0.96);
+            border: 3px double #00ffcc;
+            border-radius: 12px;
+            padding: 18px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 70;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.7);
+            animation: popIn 0.25s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* 魚画像サイズ拡大 */
+        #catch-fish-img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            margin: 10px 0;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.9));
+        }
+
+        #catch-fish-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 4px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        #catch-fish-pt {
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* 終了リザルト modal */
+        #result-modal {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 88%;
+            max-width: 360px;
+            background: radial-gradient(circle, #2a1a00 0%, #050b14 100%);
+            border: 4px double #ffd700;
+            border-radius: 12px;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 75;
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.8);
+            text-align: center;
+        }
+
+        .result-title {
+            font-family: 'Reggae One', cursive;
+            font-size: 26px;
+            color: #ffd700;
+            text-shadow: 2px 2px 0 #8b0000;
+            margin-bottom: 10px;
+        }
+
+        .result-high-badge {
+            background: linear-gradient(135deg, #ff0055, #ff6600);
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: 1px solid #ffd700;
+            margin-bottom: 12px;
+            animation: pulse 0.8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.08); }
+        }
+
+        /* 図鑑（ヘッダータイトル部分の視認性を改善） */
+        #zukan-modal {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            max-width: 100%; max-height: 100%;
+            transform: none;
+            background-image: url('images/bg/bg_zukan.png');
+            background-size: cover;
+            border: none;
+            padding: 16px;
+        }
+
+        /* コンプリート率テキストの視認性向上スタイル */
+        .zukan-progress-text {
+            font-size: 15px;
+            color: #00ffcc;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.75); /* 黒背景を入れて見やすくする */
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid #00ffcc;
+            margin-top: 8px;
+            display: inline-block;
+            text-shadow: 1px 1px 2px #000, -1px -1px 2px #000; /* 文字の周りに黒い影をつける */
+        }
+        
+        .zukan-header-title {
+            font-family: 'Reggae One', cursive;
+            font-size: 20px;
+            color: #ffd700;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid #ffd700;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+        }
+
+        .zukan-grid {
+            flex: 1;
+            width: 100%;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+            padding-right: 4px;
+        }
+
+        .zukan-card {
+            background: rgba(10, 18, 30, 0.95);
+            border: 2px solid #554433;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .zukan-card.discovered {
+            border-color: #ffd700;
+            background: rgba(15, 40, 25, 0.95);
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+        }
+
+        .zukan-card img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .zukan-card-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            margin-top: 6px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* アイコンボタン（画像切り替え用スタイル） */
+        .config-icon-btn {
+            position: absolute;
+            top: 12px; right: 12px;
+            width: 38px; height: 38px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .config-icon-btn img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .sound-icon-btn {
+            padding: 4px 8px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            height: 32px;
+        }
+
+        .sound-icon-btn img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+
+<audio id="title-bgm" src="sounds/sea.mp3" loop preload="auto"></audio>
+
+<div id="game-container">
+    <!-- タイトル画面 -->
+    <div id="title-screen">
+        <div id="main-logo">爆釣一閃！<br>２分間スコアアタック</div>
+        <button class="btn title-btn" onclick="goToMenu()">叩いて進む</button>
+    </div>
+
+    <!-- メインメニュー画面 -->
+    <div id="menu-screen">
+        <div class="config-icon-btn" onclick="openConfigModal()">
+            <img src="images/config.png" alt="Config" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text x=\'25\' y=\'75\' font-size=\'60\' fill=\'white\'>⚙</text></svg>'">
+        </div>
+
+        <div id="main-logo" style="font-size: 20px; padding: 8px 20px; margin-bottom: 12px;">メインメニュー</div>
+        
+        <div class="menu-status-box">
+            <div class="ranking-title">🏆 ハイスコア TOP 5</div>
+            <div id="ranking-list-box"></div>
+        </div>
+
+        <button class="menu-btn menu-btn-start" onclick="startScoreAttack()">釣りを始める（2分アタック）</button>
+        <button class="menu-btn" onclick="openZukan()">おさかな絵巻（図鑑）</button>
+        <button class="menu-btn" onclick="openHowToPlay()">遊び方</button>
+    </div>
+
+    <!-- UI Header -->
+    <div class="ui-header">
+        <div class="header-score-box">スコア: <span id="header-score">0</span> pt</div>
+        <div class="header-time-box">⏳ 残り <span id="header-time">120</span> 秒</div>
+        <button class="btn" style="padding: 4px 10px; font-size: 12px;" onclick="goToMenu()">中断</button>
+    </div>
+
+    <!-- ゲームエリア -->
+    <div id="game-screen" onclick="handleAction()">
+        <div id="fish-shadow"></div>
+        <div id="exclamation">一閃！</div>
+        <div id="status-text">画面を叩いて竿を振れ！</div>
+    </div>
+
+    <!-- ゲット時ポップアップ modal -->
+    <div id="catch-modal">
+        <div style="font-size: 15px; color: #00ffcc; font-weight: bold; text-shadow: 1px 1px 2px #000;">✨ GET!! ✨</div>
+        <img id="catch-fish-img" src="" alt="魚画像">
+        <div id="catch-fish-name">---</div>
+        <div id="catch-fish-pt">+0 pt</div>
+    </div>
+
+    <!-- クリアリザルト modal -->
+    <div id="result-modal">
+        <div class="result-title">TIME UP!!</div>
+        <div id="result-high-badge" class="result-high-badge" style="display: none;">🎉 NEW HIGH SCORE!! 🎉</div>
+        <div style="font-size: 16px; color: #fff; margin-bottom: 6px;">あなたの最終スコア</div>
+        <div id="result-score-text" style="font-size: 32px; font-weight: bold; color: #ffd700; text-shadow: 2px 2px 0 #000; margin-bottom: 12px;">0 pt</div>
+        <div id="result-rank-text" style="font-size: 16px; color: #00ffcc; font-weight: bold; margin-bottom: 20px;">順位: 1位に入賞！</div>
+        <button class="btn" style="padding: 10px 30px; font-size: 16px;" onclick="closeResult()">メニューへ戻る</button>
+    </div>
+
+    <!-- 設定 modal -->
+    <div id="config-modal" class="modal">
+        <div class="modal-title">設定</div>
+        <div style="width:100%;">
+            <div class="config-row">
+                <span>サウンド出力</span>
+                <button class="btn sound-icon-btn" id="config-sound-btn" onclick="toggleSound()">
+                    <img id="config-sound-img" src="images/supika_o.png" alt="Sound" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text x=\'20\' y=\'70\' font-size=\'60\' fill=\'white\'>🔊</text></svg>'">
+                </button>
+            </div>
+            <div class="config-row">
+                <span>難易度</span>
+                <button class="btn" id="config-mode-btn" onclick="toggleGameDifficulty()">モード: 標準</button>
+            </div>
+            <div class="config-row" style="border-bottom: none; flex-direction: column; gap: 8px; margin-top: 20px;">
+                <button class="btn" style="background:#440000; border-color:#ff4444; color:#ffaaaa; width:100%;" onclick="resetAllData()">ランキング・図鑑初期化</button>
+            </div>
+        </div>
+        <button class="btn" onclick="closeConfigModal()">閉じる</button>
+    </div>
+
+    <!-- 遊び方 modal -->
+    <div id="howto-modal" class="modal">
+        <div class="modal-title">遊び方</div>
+        <div class="howto-body">
+            <strong>❶ 画面タップで釣りを開始！</strong><br>
+            「じっと待て……」の表示中は画面を押さずに待機します。<br><br>
+            <strong>❷ 「一閃！」が出たら即タップ！</strong><br>
+            赤文字で「一閃！」が出た瞬間に素早く画面をタップ！<br><br>
+            <strong>❸ 2分間でハイスコアを目指せ！</strong><br>
+            大物ほど高いポイントが手に入ります。失敗してもペナルティなしで即再挑戦可能！
+        </div>
+        <button class="btn" style="margin-top: 10px;" onclick="closeHowToPlay()">閉じる</button>
+    </div>
+
+    <!-- 図鑑 modal -->
+    <div id="zukan-modal" class="modal">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+            <span class="zukan-header-title">おさかな絵巻 (海の30種)</span>
+            <button class="btn" onclick="closeZukan()">閉じる</button>
+        </div>
+        <div style="font-size: 14px; color: #00ffcc; margin-top: 6px; font-weight: bold; text-shadow: 1px 1px 2px #000;">コンプリート率: <span id="zukan-progress">0/30</span></div>
+        <div class="zukan-grid" id="zukan-grid"></div>
+    </div>
+</div>
+
+<script>
+/* ===================================================
+   厳選 海の生き物30種類（SVGフォールバック付データ）
+=================================================== */
+const SEA_30_FISH = [
+    { id: 1, name: "マイワシ", price: 40, image: "images/fish/iwasi.png", shadowWidth: 80, shadowHeight: 35, reqTime: 0.900 },
+    { id: 2, name: "マアジ", price: 50, image: "images/fish/fish_aji.png", shadowWidth: 90, shadowHeight: 40, reqTime: 0.850 },
+    { id: 3, name: "マダイ", price: 150, image: "images/fish/fish_tai.png", shadowWidth: 130, shadowHeight: 60, reqTime: 0.700 },
+    { id: 4, name: "アマエビ", price: 80, image: "images/fish/fish_amaebi.png", shadowWidth: 80, shadowHeight: 35, reqTime: 0.800 },
+    { id: 5, name: "アナゴ", price: 100, image: "images/fish/fish_anago.png", shadowWidth: 110, shadowHeight: 40, reqTime: 0.750 },
+    { id: 6, name: "サンマ", price: 100, image: "images/fish/sanma.png", shadowWidth: 100, shadowHeight: 30, reqTime: 0.750 },
+    { id: 7, name: "マサバ", price: 110, image: "images/fish/saba.png", shadowWidth: 110, shadowHeight: 40, reqTime: 0.750 },
+    { id: 8, name: "クマノミ", price: 150, image: "images/fish/fish_kumanomi.png", shadowWidth: 80, shadowHeight: 40, reqTime: 0.750 },
+    { id: 9, name: "カレイ", price: 130, image: "images/fish/karei.png", shadowWidth: 120, shadowHeight: 50, reqTime: 0.700 },
+    { id: 10, name: "カサゴ", price: 160, image: "images/fish/kasago.png", shadowWidth: 110, shadowHeight: 50, reqTime: 0.700 },
+    { id: 11, name: "ニシン", price: 90, image: "images/fish/nisin.png", shadowWidth: 100, shadowHeight: 40, reqTime: 0.800 },
+    { id: 12, name: "ヒラメ", price: 220, image: "images/fish/hirame.png", shadowWidth: 140, shadowHeight: 50, reqTime: 0.650 },
+    { id: 13, name: "カワハギ", price: 180, image: "images/fish/kawahagi.png", shadowWidth: 100, shadowHeight: 45, reqTime: 0.700 },
+    { id: 14, name: "ハリセンボン", price: 120, image: "images/fish/fish_harisenbon.png", shadowWidth: 110, shadowHeight: 50, reqTime: 0.750 },
+    { id: 15, name: "トビウオ", price: 140, image: "images/fish/tobiuo.png", shadowWidth: 100, shadowHeight: 45, reqTime: 0.700 },
+    { id: 16, name: "ヤリイカ", price: 160, image: "images/fish/yariika.png", shadowWidth: 110, shadowHeight: 40, reqTime: 0.700 },
+    { id: 17, name: "カツオ", price: 350, image: "images/fish/katuo.png", shadowWidth: 150, shadowHeight: 60, reqTime: 0.600 },
+    { id: 18, name: "エイ", price: 200, image: "images/fish/fish_ei.png", shadowWidth: 150, shadowHeight: 65, reqTime: 0.650 },
+    { id: 19, name: "フグ", price: 300, image: "images/fish/hugu.png", shadowWidth: 120, shadowHeight: 55, reqTime: 0.600 },
+    { id: 20, name: "ウツボ", price: 350, image: "images/fish/utubo.png", shadowWidth: 160, shadowHeight: 45, reqTime: 0.550 },
+    { id: 21, name: "クロマグロ", price: 500, image: "images/fish/fish_maguro.png", shadowWidth: 170, shadowHeight: 70, reqTime: 0.500 },
+    { id: 22, name: "サメ", price: 600, image: "images/fish/fish_same1.png", shadowWidth: 180, shadowHeight: 65, reqTime: 0.450 },
+    { id: 23, name: "シュモクザメ", price: 700, image: "images/fish/hammer.png", shadowWidth: 180, shadowHeight: 70, reqTime: 0.450 },
+    { id: 24, name: "イルカ", price: 800, image: "images/fish/iruka.png", shadowWidth: 170, shadowHeight: 65, reqTime: 0.400 },
+    { id: 25, name: "マンタ", price: 850, image: "images/fish/manta.png", shadowWidth: 170, shadowHeight: 70, reqTime: 0.400 },
+    { id: 26, name: "カジキ", price: 900, image: "images/fish/kaziki.png", shadowWidth: 200, shadowHeight: 65, reqTime: 0.380 },
+    { id: 27, name: "マンボウ", price: 1100, image: "images/fish/manbou.png", shadowWidth: 190, shadowHeight: 75, reqTime: 0.380 },
+    { id: 28, name: "シャチ", price: 1500, image: "images/fish/syati.png", shadowWidth: 210, shadowHeight: 70, reqTime: 0.350 },
+    { id: 29, name: "ジンベエザメ", price: 3000, image: "images/fish/zinbei.png", shadowWidth: 240, shadowHeight: 80, reqTime: 0.320 },
+    { id: 30, name: "シロナガスクジラ", price: 5000, image: "images/fish/sironagasukujira.png", shadowWidth: 260, shadowHeight: 85, reqTime: 0.300 }
+];
+
+function getFishSvg(name) {
+    return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><ellipse cx='50' cy='50' rx='40' ry='22' fill='%2300ffcc'/><polygon points='85,50 100,35 100,65' fill='%2300ffcc'/><circle cx='25' cy='45' r='4' fill='black'/><text x='50' y='53' font-size='10' font-weight='bold' text-anchor='middle' fill='black'>${encodeURIComponent(name.substring(0,4))}</text></svg>`;
+}
+
+/* ===================================================
+   状態管理変数
+=================================================== */
+let gameState = 'TITLE';
+let score = 0;
+let timeLeft = 120;
+let scoreTimer = null;
+let timerId = null;
+let timeoutTimerId = null;
+let shadowAnimId = null;
+let currentTargetFish = null;
+let soundEnabled = true;
+let easyMode = false;
+let audioCtx = null;
+
+let highScoreList = JSON.parse(localStorage.getItem('sa_high_scores_v2')) || [0, 0, 0, 0, 0];
+let caughtFish = JSON.parse(localStorage.getItem('sa_zukan_v2')) || {};
+
+/* ===================================================
+   サウンドシステム
+=================================================== */
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function playTone(freq, duration, type = 'square') {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+}
+
+function playSE(type) {
+    if (type === 'signal') {
+        playTone(880, 0.15, 'sawtooth');
+        setTimeout(() => playTone(1760, 0.2, 'sawtooth'), 60);
+    } else if (type === 'success') {
+        [523, 659, 783, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.08, 'square'), i * 50));
+    } else if (type === 'foul') {
+        playTone(130, 0.25, 'sawtooth');
+    } else if (type === 'fanfare') {
+        const notes = [523, 659, 783, 1046, 880, 1046];
+        notes.forEach((f, i) => setTimeout(() => playTone(f, 0.18, 'triangle'), i * 90));
+    }
+}
+
+function closeAllModals() {
+    document.getElementById('config-modal').style.display = "none";
+    document.getElementById('howto-modal').style.display = "none";
+    document.getElementById('zukan-modal').style.display = "none";
+    document.getElementById('catch-modal').style.display = "none";
+    document.getElementById('result-modal').style.display = "none";
+}
+
+function goToMenu() {
+    initAudio();
+    clearInterval(scoreTimer);
+    clearTimeout(timerId);
+    clearTimeout(timeoutTimerId);
+    cancelAnimationFrame(shadowAnimId);
+
+    closeAllModals();
+    document.getElementById('title-screen').style.display = "none";
+    document.getElementById('menu-screen').style.display = "flex";
+    gameState = 'MENU';
+    updateRankingUI();
+}
+
+function updateRankingUI() {
+    const box = document.getElementById('ranking-list-box');
+    box.innerHTML = highScoreList.map((sc, i) => `
+        <div class="ranking-row">
+            <span>${i + 1}位</span>
+            <span style="color:#00ffcc; font-weight:bold;">${sc} pt</span>
+        </div>
+    `).join('');
+}
+
+/* ===================================================
+   スコアアタックメインルーチン
+=================================================== */
+function startScoreAttack() {
+    initAudio();
+    closeAllModals();
+    document.getElementById('menu-screen').style.display = "none";
+
+    score = 0;
+    timeLeft = 120;
+    updateUI();
+
+    clearInterval(scoreTimer);
+    scoreTimer = setInterval(() => {
+        timeLeft--;
+        updateUI();
+        if (timeLeft <= 0) {
+            endGame();
+        }
+    }, 1000);
+
+    startWaitingFast();
+}
+
+function updateUI() {
+    document.getElementById('header-score').innerText = score;
+    document.getElementById('header-time').innerText = timeLeft;
+}
+
+function startWaitingFast() {
+    if (timeLeft <= 0) return;
+    gameState = 'WAITING';
+
+    currentTargetFish = SEA_30_FISH[Math.floor(Math.random() * SEA_30_FISH.length)];
+
+    document.getElementById('status-text').innerText = "じっと待て……";
+    document.getElementById('status-text').style.color = "#fff";
+    document.getElementById('exclamation').style.display = "none";
+
+    setupFishShadow(currentTargetFish);
+
+    const delay = Math.floor(Math.random() * 1000) + 800;
+
+    timerId = setTimeout(() => {
+        if (gameState !== 'WAITING') return;
+        gameState = 'SIGNAL';
+        document.getElementById('exclamation').style.display = "block";
+        document.getElementById('status-text').innerText = "一閃！叩け！";
+        document.getElementById('status-text').style.color = "#ffd700";
+        playSE('signal');
+
+        const limitTime = (currentTargetFish.reqTime + (easyMode ? 0.35 : 0)) * 1000;
+
+        clearTimeout(timeoutTimerId);
+        timeoutTimerId = setTimeout(() => {
+            if (gameState === 'SIGNAL') {
+                playSE('foul');
+                hideFishShadow();
+                document.getElementById('exclamation').style.display = "none";
+                document.getElementById('status-text').innerText = "逃げられた！";
+                document.getElementById('status-text').style.color = "#ff3333";
+                
+                setTimeout(startWaitingFast, 300);
+            }
+        }, limitTime);
+    }, delay);
+}
+
+function handleAction() {
+    initAudio();
+    if (gameState === 'WAITING') {
+        clearTimeout(timerId);
+        hideFishShadow();
+        playSE('foul');
+        document.getElementById('status-text').innerText = "早合わせ！次！";
+        document.getElementById('status-text').style.color = "#ff3333";
+        setTimeout(startWaitingFast, 300);
+    } else if (gameState === 'SIGNAL') {
+        clearTimeout(timeoutTimerId);
+        hideFishShadow();
+        document.getElementById('exclamation').style.display = "none";
+
+        const pt = currentTargetFish.price;
+        score += pt;
+        playSE('success');
+
+        if (!caughtFish[currentTargetFish.id]) {
+            caughtFish[currentTargetFish.id] = true;
+            localStorage.setItem('sa_zukan_v2', JSON.stringify(caughtFish));
+        }
+
+        updateUI();
+        showCatchPopup(currentTargetFish, pt);
+    }
+}
+
+function showCatchPopup(fish, pt) {
+    gameState = 'CATCH_POPUP';
+
+    const modal = document.getElementById('catch-modal');
+    const img = document.getElementById('catch-fish-img');
+    const name = document.getElementById('catch-fish-name');
+    const ptText = document.getElementById('catch-fish-pt');
+
+    img.src = fish.image;
+    img.onerror = () => { img.src = getFishSvg(fish.name); };
+    name.innerText = fish.name;
+    ptText.innerText = `+${pt} pt GET!!`;
+
+    modal.style.display = "flex";
+
+    setTimeout(() => {
+        modal.style.display = "none";
+        startWaitingFast();
+    }, 800);
+}
+
+function endGame() {
+    clearInterval(scoreTimer);
+    clearTimeout(timerId);
+    clearTimeout(timeoutTimerId);
+    hideFishShadow();
+    gameState = 'RESULT';
+
+    const isHighScore = score > highScoreList[0];
+    
+    highScoreList.push(score);
+    highScoreList.sort((a, b) => b - a);
+    highScoreList = highScoreList.slice(0, 5);
+    localStorage.setItem('sa_high_scores_v2', JSON.stringify(highScoreList));
+
+    const myRank = highScoreList.indexOf(score) + 1;
+
+    document.getElementById('result-score-text').innerText = `${score} pt`;
+    
+    const badge = document.getElementById('result-high-badge');
+    const rankText = document.getElementById('result-rank-text');
+
+    if (isHighScore && score > 0) {
+        badge.style.display = "block";
+        rankText.innerText = `🌟 堂々の第1位ハイスコア更新！ 🌟`;
+        playSE('fanfare');
+    } else if (myRank > 0 && myRank <= 5) {
+        badge.style.display = "none";
+        rankText.innerText = `🎉 第 ${myRank} 位にランクイン！`;
+        playSE('fanfare');
+    } else {
+        badge.style.display = "none";
+        rankText.innerText = `ランクインならず！再挑戦しよう！`;
+        playSE('success');
+    }
+
+    document.getElementById('result-modal').style.display = "flex";
+}
+
+function closeResult() {
+    document.getElementById('result-modal').style.display = "none";
+    goToMenu();
+}
+
+function setupFishShadow(fish) {
+    const shadow = document.getElementById('fish-shadow');
+    shadow.style.display = "block";
+    shadow.style.width = `${fish.shadowWidth}px`;
+    shadow.style.height = `${fish.shadowHeight}px`;
+
+    shadow.style.backgroundImage = `url('images/shadows/shadow_midi.png')`;
+
+    let posX = -200;
+    shadow.style.top = `${Math.random() * 80 + 360}px`;
+
+    cancelAnimationFrame(shadowAnimId);
+    function animate() {
+        posX += 4.5;
+        if (posX > 500) posX = -200;
+        shadow.style.left = `${posX}px`;
+        if (gameState === 'WAITING' || gameState === 'SIGNAL') {
+            shadowAnimId = requestAnimationFrame(animate);
+        }
+    }
+    shadowAnimId = requestAnimationFrame(animate);
+}
+
+function hideFishShadow() {
+    document.getElementById('fish-shadow').style.display = "none";
+    cancelAnimationFrame(shadowAnimId);
+}
+
+function openConfigModal() {
+    document.getElementById('config-modal').style.display = "flex";
+}
+function closeConfigModal() {
+    document.getElementById('config-modal').style.display = "none";
+}
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    const soundImg = document.getElementById('config-sound-img');
+    if (soundImg) {
+        soundImg.src = soundEnabled ? "images/supika_o.png" : "images/supika_x.png";
+    }
+}
+function toggleGameDifficulty() {
+    easyMode = !easyMode;
+    document.getElementById('config-mode-btn').innerText = easyMode ? "モード: 簡単" : "モード: 標準";
+}
+function resetAllData() {
+    if (confirm("ランキングと図鑑記録をリセットしますか？")) {
+        localStorage.removeItem('sa_high_scores_v2');
+        localStorage.removeItem('sa_zukan_v2');
+        highScoreList = [0, 0, 0, 0, 0];
+        caughtFish = {};
+        updateRankingUI();
+        closeConfigModal();
+    }
+}
+function openHowToPlay() {
+    document.getElementById('howto-modal').style.display = "flex";
+}
+function closeHowToPlay() {
+    document.getElementById('howto-modal').style.display = "none";
+}
+function openZukan() {
+    const grid = document.getElementById('zukan-grid');
+    grid.innerHTML = "";
+    let count = 0;
+
+    SEA_30_FISH.forEach(fish => {
+        const isGet = caughtFish[fish.id];
+        if (isGet) count++;
+
+        const card = document.createElement('div');
+        card.className = `zukan-card ${isGet ? 'discovered' : ''}`;
+        
+        const img = document.createElement('img');
+        if (isGet) {
+            img.src = fish.image;
+            img.onerror = () => { img.src = getFishSvg(fish.name); };
+        } else {
+            img.src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='65' font-size='50' fill='%23666666' text-anchor='middle'>？</text></svg>`;
+        }
+
+        const name = document.createElement('div');
+        name.className = "zukan-card-name";
+        name.innerText = isGet ? fish.name : "？？？";
+
+        card.appendChild(img);
+        card.appendChild(name);
+        grid.appendChild(card);
+    });
+
+    document.getElementById('zukan-progress').innerText = `${count}/30`;
+    document.getElementById('zukan-modal').style.display = "flex";
+}
+function closeZukan() {
+    document.getElementById('zukan-modal').style.display = "none";
+}
+</script>
+</body>
+</html>
